@@ -1,3 +1,4 @@
+import { Constant } from "./common/Constant";
 import { SpeedType } from "./Joystick";
 const { ccclass, property } = cc._decorator;
 
@@ -53,6 +54,9 @@ export default class Player extends cc.Component {
 
   _body: cc.RigidBody;
 
+  @property(cc.Prefab)
+  bullet: cc.Prefab = null;
+
   onLoad() {
     if (this.rigidbody) {
       cc.director.getPhysicsManager().enabled = true;
@@ -62,6 +66,7 @@ export default class Player extends cc.Component {
     instance.on(cc.Node.EventType.TOUCH_START, this.onTouchStart, this);
     instance.on(cc.Node.EventType.TOUCH_MOVE, this.onTouchMove, this);
     instance.on(cc.Node.EventType.TOUCH_END, this.onTouchEnd, this);
+    instance.on(Constant.EVENT.PLAYER_SHOOT, this.onShoot, this);
   }
 
   onTouchStart() {}
@@ -93,6 +98,16 @@ export default class Player extends cc.Component {
       const newPos = oldPos.add(this.moveDir.mul(this._moveSpeed / 120));
       this.node.setPosition(newPos);
     }
+  }
+
+  onShoot() {
+    let bullet = cc.instantiate(this.bullet);
+    bullet.position = this.node.position;
+    bullet.angle = this.node.angle;
+    this.node.parent.addChild(bullet);
+
+    let forceV2 = cc.v2(this.moveDir.x * Constant.PHYSICS.FORCE_SHOOT, this.moveDir.y * Constant.PHYSICS.FORCE_SHOOT);
+    bullet.getComponent(cc.RigidBody).applyForceToCenter(forceV2, true);
   }
 
   update(dt) {

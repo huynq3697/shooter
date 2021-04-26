@@ -1,3 +1,4 @@
+import { Constant } from "./common/Constant";
 import { JoystickType, instance } from "./Joystick";
 
 const { ccclass } = cc._decorator;
@@ -16,5 +17,9 @@ export default class UI extends cc.Component {
    */
   useFollowType() {
     instance.emit("set_joystick_type", JoystickType.FOLLOW);
+  }
+
+  shoot() {
+    instance.emit(Constant.EVENT.PLAYER_SHOOT);
   }
 }
